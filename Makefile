@@ -5,6 +5,8 @@ createdb:
 dropdb:
 	docker exec -i mysql_urlshortener mysql -uroot -psecret -e "drop database url_short"
 importdb:
-	docker exec -i mysql_urlshortener mysql -uroot -psecret url_short < ./db/query.sql
+	docker exec -i mysql_urlshortener mysql -uroot -psecret url_short < ./db/sql/query.sql
+test:
+	go test -v -cover ./...
 
-.PHONY: mysql createdb dropdb importdb
+.PHONY: mysql createdb dropdb importdb test
