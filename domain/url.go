@@ -18,9 +18,14 @@ type CreateUrlParams struct {
 type UrlRepository interface {
 	Create(context.Context, CreateUrlParams) (int, error)
 	FindByShortUrl(context.Context, string) (Url, error)
+	FindByID(context.Context, int) (Url, error)
 	FindAll(context.Context) ([]Url, error)
 	DeleteByID(context.Context, int) (int, error)
 }
 
 type UrlUsecase interface {
+	CreateNewURL(context.Context, string) (Url, error)
+	FindUrlByShort(context.Context, string) (Url, error)
+	FindAllUrl(context.Context) ([]Url, error)
+	DeleteByID(context.Context, int) (Url, error)
 }

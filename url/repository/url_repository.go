@@ -50,6 +50,22 @@ func (r *urlRepository) FindByShortUrl(ctx context.Context, shortUrl string) (do
 	return url, nil
 }
 
+// Fetch one url data from urls table
+// Receiving context, and id (int) as parameter
+// Returning url data (domain.Url) if success, and error if failed
+
+func (r *urlRepository) FindByID(ctx context.Context, id int) (domain.Url, error) {
+	url := domain.Url{}
+	err := r.db.QueryRowContext(ctx, queries.FindByID, id).
+		Scan(&url.ID, &url.Url, &url.ShortUrl, &url.ClickCount, &url.CreatedAt)
+
+	if err != nil {
+		return url, err
+	}
+
+	return url, nil
+}
+
 // Fetch all url data from urls table
 // Receiving context as parameter
 // Returning url data ([] domain.Url) if success, and error if failed
@@ -76,7 +92,7 @@ func (r *urlRepository) FindAll(ctx context.Context) ([]domain.Url, error) {
 }
 
 // Delete one url data from urls table
-// Receiving context, and url_id (int) as parameter
+// Receiving context, and id (int) as parameter
 // Returning deleted url_id (int) if success, and error if failed
 
 func (r *urlRepository) DeleteByID(ctx context.Context, ID int) (int, error) {
