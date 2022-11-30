@@ -144,5 +144,15 @@ func (h *UrlHandler) getUrlByShort(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	http.Redirect(res, req, url.Url, http.StatusPermanentRedirect)
+	err = h.urlUsecase.IncrementClickCount(context.Background(), url.ID)
+	if err != nil {
+		utils.FormatResponse(res, &utils.ResponseErrorParams{
+			Code:   http.StatusBadGateway,
+			Status: "Bad gateway",
+			Errors: []string{err.Error()},
+		})
+		return
+	}
+
+	http.Redirect(res, req, url.Url, http.StatusTemporaryRedirect)
 }

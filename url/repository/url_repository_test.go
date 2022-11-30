@@ -135,3 +135,27 @@ func TestDeleteByID(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, 1, id)
 }
+
+func TestIncrementUrl(t *testing.T) {
+	db, mock := NewMock()
+	defer db.Close()
+
+	params := domain.Url{
+		ID:         1,
+		Url:        "www.github.com/mrizalr/urlshortener",
+		ShortUrl:   "ofJA32",
+		ClickCount: 12,
+		CreatedAt:  time.Now().Unix(),
+	}
+
+	mock.ExpectExec(queries.IncrementClickCount).
+		WithArgs(params.ClickCount+1, params.ID).
+		WillReturnResult(sqlmock.NewResult(1, 1))
+
+	repo := urlRepository{db}
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	err := repo.IncrementURLClick(ctx, 1, 13)
+	assert.NoError(t, err)
+}

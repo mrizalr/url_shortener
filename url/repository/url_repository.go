@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"fmt"
 
 	"github.com/mrizalr/urlshortener/db/queries"
 	"github.com/mrizalr/urlshortener/domain"
@@ -107,4 +108,26 @@ func (r *urlRepository) DeleteByID(ctx context.Context, ID int) (int, error) {
 	}
 
 	return int(lastDeletedId), nil
+}
+
+// Increment click_count on opened url
+// Receiving context, id (int), and count(int) as parameter
+// Returning nil if success, and error if failed
+
+func (r *urlRepository) IncrementURLClick(ctx context.Context, ID int, count int) error {
+	sqlRes, err := r.db.ExecContext(ctx, queries.IncrementClickCount, count, ID)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := sqlRes.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected != 1 {
+		return fmt.Errorf("something went wrong when updated table, rows affected : %d", rowsAffected)
+	}
+
+	return nil
 }

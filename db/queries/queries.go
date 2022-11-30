@@ -14,3 +14,6 @@ const FindAll string = `SELECT id, url, short_url, click_count, created_at FROM 
 
 // Delete URL by ID
 const DeleteByID = `DELETE FROM urls WHERE id = ?`
+
+//Increment click_count when url opened
+const IncrementClickCount = `UPDATE urls SET click_count = ? WHERE id = ?`

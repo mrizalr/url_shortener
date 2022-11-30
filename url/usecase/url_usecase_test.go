@@ -140,3 +140,23 @@ func TestDeleteByID(t *testing.T) {
 	assert.Equal(t, result.ClickCount, url.ClickCount)
 	assert.Equal(t, result.CreatedAt, url.CreatedAt)
 }
+
+func TestIncrementCountClick(t *testing.T) {
+	repoMock := new(mocks.UrlRepository)
+	urlUsecase := urlUsecase{repoMock}
+
+	idTest := 1
+	result := domain.Url{
+		ID:         idTest,
+		Url:        "https://www.linkedin.com/in/mrizalr",
+		ShortUrl:   "jUHH23x",
+		ClickCount: 63,
+		CreatedAt:  time.Now().Unix(),
+	}
+
+	repoMock.On("FindByID", context.Background(), idTest).Return(result, nil)
+	repoMock.On("IncrementURLClick", context.Background(), idTest, result.ClickCount+1).Return(nil)
+
+	err := urlUsecase.IncrementClickCount(context.Background(), idTest)
+	assert.NoError(t, err)
+}

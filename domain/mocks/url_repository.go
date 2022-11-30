@@ -35,3 +35,8 @@ func (r *UrlRepository) DeleteByID(ctx context.Context, id int) (int, error) {
 	args := r.Mock.Called(ctx, id)
 	return args.Int(0), args.Error(1)
 }
+
+func (r *UrlRepository) IncrementURLClick(ctx context.Context, id int, count int) error {
+	args := r.Mock.Called(ctx, id, count)
+	return args.Error(0)
+}

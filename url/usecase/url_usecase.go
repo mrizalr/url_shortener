@@ -90,3 +90,17 @@ func (u *urlUsecase) DeleteByID(ctx context.Context, id int) (domain.Url, error)
 	_, err = u.urlRepository.DeleteByID(ctx, id)
 	return url, err
 }
+
+func (u *urlUsecase) IncrementClickCount(ctx context.Context, id int) error {
+	url, err := u.urlRepository.FindByID(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	err = u.urlRepository.IncrementURLClick(ctx, id, url.ClickCount+1)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

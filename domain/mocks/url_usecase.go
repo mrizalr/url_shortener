@@ -30,3 +30,8 @@ func (u *UrlUsecase) DeleteByID(ctx context.Context, ID int) (domain.Url, error)
 	args := u.Mock.Called(ctx, ID)
 	return args.Get(0).(domain.Url), args.Error(1)
 }
+
+func (u *UrlUsecase) IncrementClickCount(ctx context.Context, id int) error {
+	args := u.Mock.Called(ctx, id)
+	return args.Error(0)
+}

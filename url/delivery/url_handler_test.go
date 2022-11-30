@@ -169,8 +169,10 @@ func TestGetUrl(t *testing.T) {
 		ClickCount: 23,
 		CreatedAt:  time.Now().Unix(),
 	}
+
 	mockUsecase.On("FindUrlByShort", context.Background(), mock.AnythingOfType("string")).
 		Return(usecaseResult, nil)
+	mockUsecase.On("IncrementClickCount", context.Background(), usecaseResult.ID).Return(nil)
 
 	req := httptest.NewRequest("GET", fmt.Sprintf("/api/v1/url/%s", usecaseResult.ShortUrl), nil)
 	res := httptest.NewRecorder()

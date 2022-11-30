@@ -21,6 +21,7 @@ type UrlRepository interface {
 	FindByID(context.Context, int) (Url, error)
 	FindAll(context.Context) ([]Url, error)
 	DeleteByID(context.Context, int) (int, error)
+	IncrementURLClick(context.Context, int, int) error
 }
 
 type UrlUsecase interface {
@@ -28,4 +29,5 @@ type UrlUsecase interface {
 	FindUrlByShort(context.Context, string) (Url, error)
 	FindAllUrl(context.Context) ([]Url, error)
 	DeleteByID(context.Context, int) (Url, error)
+	IncrementClickCount(context.Context, int) error
 }
