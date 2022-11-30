@@ -8,5 +8,9 @@ importdb:
 	docker exec -i mysql_urlshortener mysql -uroot -psecret url_short < ./db/sql/query.sql
 test:
 	go test -v -cover ./... -short
+testall:
+	go test -v -cover ./...
+run:
+	go run main.go
 
-.PHONY: mysql createdb dropdb importdb test
+.PHONY: mysql createdb dropdb importdb test testall run

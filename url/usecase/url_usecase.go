@@ -3,6 +3,9 @@ package usecase
 import (
 	"context"
 	"database/sql"
+	"errors"
+	"fmt"
+	"strings"
 	"time"
 
 	"github.com/mrizalr/urlshortener/domain"
@@ -33,6 +36,14 @@ func generateRandom() string {
 
 func (u *urlUsecase) CreateNewURL(ctx context.Context, url string) (domain.Url, error) {
 	result := domain.Url{}
+	if url == "" {
+		return result, errors.New("validation error: url shouldn't be empty")
+	}
+
+	if !strings.HasPrefix(url, "https://") {
+		url = fmt.Sprintf("https://%s", url)
+	}
+
 	shortUrl := generateRandom()
 	for {
 		_, err := u.urlRepository.FindByShortUrl(context.Background(), shortUrl)
@@ -71,12 +82,11 @@ func (u *urlUsecase) FindAllUrl(ctx context.Context) ([]domain.Url, error) {
 }
 
 func (u *urlUsecase) DeleteByID(ctx context.Context, id int) (domain.Url, error) {
-	url := domain.Url{}
-	id, err := u.urlRepository.DeleteByID(ctx, id)
+	url, err := u.urlRepository.FindByID(context.Background(), id)
 	if err != nil {
 		return url, err
 	}
 
-	url, err = u.urlRepository.FindByID(context.Background(), id)
+	_, err = u.urlRepository.DeleteByID(ctx, id)
 	return url, err
 }
