@@ -3,10 +3,12 @@ package delivery
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/gorilla/mux"
 	"github.com/mrizalr/urlshortener/domain"
@@ -133,9 +135,28 @@ func (h *UrlHandler) deleteUrlByID(res http.ResponseWriter, req *http.Request) {
 }
 
 func (h *UrlHandler) getUrlByShort(res http.ResponseWriter, req *http.Request) {
+	ip := req.RemoteAddr
+	xforward := req.Header.Get("X-Forwarded-For")
+	fmt.Println("IP : ", ip)
+	fmt.Println("X-Forwarded-For : ", xforward)
+
 	shortUrl := mux.Vars(req)["short"]
-	url, err := h.urlUsecase.FindUrlByShort(context.Background(), shortUrl)
-	if err != nil {
+
+	urlChan := make(chan domain.Url, 5)
+	errChan := make(chan error, 5)
+
+	wg := sync.WaitGroup{}
+	wg.Add(1)
+
+	go func() {
+		defer wg.Done()
+
+		url, err := h.urlUsecase.FindUrlByShort(context.Background(), shortUrl)
+		urlChan <- url
+		errChan <- err
+	}()
+
+	if err := <-errChan; err != nil {
 		utils.FormatResponse(res, &utils.ResponseErrorParams{
 			Code:   http.StatusBadGateway,
 			Status: "Bad gateway",
@@ -144,8 +165,16 @@ func (h *UrlHandler) getUrlByShort(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	err = h.urlUsecase.IncrementClickCount(context.Background(), url.ID)
-	if err != nil {
+	url := <-urlChan
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		err := h.urlUsecase.IncrementClickCount(context.Background(), url.ID)
+		errChan <- err
+	}()
+
+	if err := <-errChan; err != nil {
 		utils.FormatResponse(res, &utils.ResponseErrorParams{
 			Code:   http.StatusBadGateway,
 			Status: "Bad gateway",
@@ -154,5 +183,6 @@ func (h *UrlHandler) getUrlByShort(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	wg.Wait()
 	http.Redirect(res, req, url.Url, http.StatusTemporaryRedirect)
 }

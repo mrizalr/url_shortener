@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"regexp"
 	"strings"
 	"time"
 
@@ -40,6 +41,15 @@ func (u *urlUsecase) CreateNewURL(ctx context.Context, url string) (domain.Url, 
 		return result, errors.New("validation error: url shouldn't be empty")
 	}
 
+	regex, err := regexp.Compile(`^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$`)
+	if err != nil {
+		return result, err
+	}
+
+	if valid := regex.FindAllString(url, -1); len(valid) == 0 {
+		return result, errors.New("validation error: url isn't valid")
+	}
+
 	if !strings.HasPrefix(url, "https://") {
 		url = fmt.Sprintf("https://%s", url)
 	}
@@ -59,7 +69,7 @@ func (u *urlUsecase) CreateNewURL(ctx context.Context, url string) (domain.Url, 
 		ShortUrl: shortUrl,
 	}
 
-	_, err := u.urlRepository.Create(context.Background(), params)
+	_, err = u.urlRepository.Create(context.Background(), params)
 	if err != nil {
 		return result, err
 	}

@@ -1,0 +1,10 @@
+{
+    "server_port":80,
+    "database":{
+        "host":"localhost",
+        "user":"root",
+        "password":"secret",
+        "port":2252,
+        "dbname":"url_short"
+    }
+}
