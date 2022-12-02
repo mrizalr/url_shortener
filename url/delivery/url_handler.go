@@ -30,6 +30,7 @@ func NewUrlHandler(urlUsecase domain.UrlUsecase, m *mux.Router) {
 
 func (h *UrlHandler) createNewUrlShortener(res http.ResponseWriter, req *http.Request) {
 	res.Header().Set("Content-Type", "application/json")
+	res.Header().Set("Access-Control-Allow-Origin", "*")
 
 	body, err := io.ReadAll(req.Body)
 	if err != nil {
@@ -84,6 +85,7 @@ func (h *UrlHandler) createNewUrlShortener(res http.ResponseWriter, req *http.Re
 
 func (h *UrlHandler) getAllUrl(res http.ResponseWriter, req *http.Request) {
 	res.Header().Set("Content-Type", "application/json")
+	res.Header().Set("Access-Control-Allow-Origin", "*")
 
 	urls, err := h.urlUsecase.FindAllUrl(context.Background())
 	if err != nil {
@@ -104,6 +106,7 @@ func (h *UrlHandler) getAllUrl(res http.ResponseWriter, req *http.Request) {
 
 func (h *UrlHandler) deleteUrlByID(res http.ResponseWriter, req *http.Request) {
 	res.Header().Set("Content-Type", "application/json")
+	res.Header().Set("Access-Control-Allow-Origin", "*")
 
 	urlIdStr := mux.Vars(req)["id"]
 	urlId, err := strconv.Atoi(urlIdStr)
