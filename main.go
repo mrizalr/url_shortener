@@ -11,39 +11,38 @@ import (
 	"github.com/mrizalr/urlshortener/url/delivery"
 	"github.com/mrizalr/urlshortener/url/repository"
 	"github.com/mrizalr/urlshortener/url/usecase"
-	"github.com/spf13/viper"
 
 	_ "github.com/go-sql-driver/mysql"
 )
 
-func initConfig() {
-	viper.SetConfigType("json")
-	wd, _ := os.Getwd()
-	viper.AddConfigPath(wd)
-	viper.SetConfigName("config")
+// func initConfig() {
+// 	viper.SetConfigType("json")
+// 	wd, _ := os.Getwd()
+// 	viper.AddConfigPath(wd)
+// 	viper.SetConfigName("config")
 
-	err := viper.ReadInConfig()
-	if err != nil {
-		log.Fatal("Error when read config file : " + err.Error())
-	}
+// 	err := viper.ReadInConfig()
+// 	if err != nil {
+// 		log.Fatal("Error when read config file : " + err.Error())
+// 	}
 
-	log.Println("Success init config.json")
-}
+// 	log.Println("Success init config.json")
+// }
 
-func init() {
-	initConfig()
-}
+// func init() {
+// 	initConfig()
+// }
 
 func main() {
 	var (
-		user     = viper.GetString("database.user")
-		password = viper.GetString("database.password")
-		host     = viper.GetString("database.host")
-		port     = viper.GetInt("database.port")
-		dbname   = viper.GetString("database.dbname")
+		user     = os.Getenv("MYSQLUSER")
+		password = os.Getenv("MYSQLPASSWORD")
+		host     = os.Getenv("MYSQLHOST")
+		port     = os.Getenv("MYSQLPORT")
+		dbname   = os.Getenv("MYSQLUSER")
 	)
 
-	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", user, password, host, port, dbname))
+	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", user, password, host, port, dbname))
 	if err != nil {
 		panic(err)
 	}
@@ -54,5 +53,5 @@ func main() {
 	urlUsecase := usecase.NewUrlUsecase(urlRepository)
 	delivery.NewUrlHandler(urlUsecase, _mux)
 
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", viper.GetInt("server_port")), _mux))
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")), _mux))
 }
