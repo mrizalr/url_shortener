@@ -39,7 +39,7 @@ func main() {
 		password = os.Getenv("MYSQLPASSWORD")
 		host     = os.Getenv("MYSQLHOST")
 		port     = os.Getenv("MYSQLPORT")
-		dbname   = os.Getenv("MYSQLUSER")
+		dbname   = os.Getenv("MYSQLDATABASE")
 	)
 
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", user, password, host, port, dbname))
