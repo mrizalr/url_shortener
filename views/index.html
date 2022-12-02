@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shrt.go | Url Shortener</title>
+    <link rel="stylesheet" href="./styles.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+</head>
+<body>
+    <div class="title-container">
+        <h1 class="title">shrt.go</h1>
+    </div>
+    <div class="input-container">
+        <form action="localhost:80/api/v1/url/create" method="POST" class="input-form">
+            <div class="https">https://</div>
+            <input type="text" class="text-input" id="url-textfield" placeholder="input a url">
+            <button type="submit" class="submit-button" id="submit-button">
+                <i class='bx bx-link-alt'></i> Shorten
+            </button>
+        </form>
+    </div>
+    <div class="card-container">
+        <div class="card">
+            <div class="short-link">shrt.go/shS4bK</div>
+            <div class="web-title">GOOGLE | SEARCH</div>
+            <div class="web-url">www.google.com</div>
+            <div class="created-date">16.04 - 22/05/22</div>
+            <div class="clicked-count">
+                <span class="count">201</span>
+                clicks
+            </div>
+        </div>
+        <div class="card">
+            <div class="short-link">shrt.go/shS4bK</div>
+            <div class="web-title">GOOGLE | SEARCH</div>
+            <div class="web-url">www.google.com</div>
+            <div class="created-date">16.04 - 22/05/22</div>
+            <div class="clicked-count">
+                <span class="count">201</span>
+                clicks
+            </div>
+        </div>
+        <div class="card">
+            <div class="short-link">shrt.go/shS4bK</div>
+            <div class="web-title">GOOGLE | SEARCH</div>
+            <div class="web-url">www.google.com</div>
+            <div class="created-date">16.04 - 22/05/22</div>
+            <div class="clicked-count">
+                <span class="count">201</span>
+                clicks
+            </div>
+        </div>
+    </div>
+
+    <script src="./main.js"></script>
+</body>
+</html>

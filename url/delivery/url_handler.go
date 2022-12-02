@@ -3,7 +3,6 @@ package delivery
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 	"strconv"
@@ -135,11 +134,6 @@ func (h *UrlHandler) deleteUrlByID(res http.ResponseWriter, req *http.Request) {
 }
 
 func (h *UrlHandler) getUrlByShort(res http.ResponseWriter, req *http.Request) {
-	ip := req.RemoteAddr
-	xforward := req.Header.Get("X-Forwarded-For")
-	fmt.Println("IP : ", ip)
-	fmt.Println("X-Forwarded-For : ", xforward)
-
 	shortUrl := mux.Vars(req)["short"]
 
 	urlChan := make(chan domain.Url, 5)

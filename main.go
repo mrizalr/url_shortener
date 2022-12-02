@@ -48,7 +48,7 @@ func main() {
 		panic(err)
 	}
 
-	_mux := mux.NewRouter()
+	_mux := mux.NewRouter().StrictSlash(true)
 
 	urlRepository := repository.NewUrlRepository(db)
 	urlUsecase := usecase.NewUrlUsecase(urlRepository)
