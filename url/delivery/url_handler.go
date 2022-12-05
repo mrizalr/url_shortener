@@ -5,9 +5,11 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"path"
 	"strconv"
 	"strings"
 	"sync"
+	"text/template"
 
 	"github.com/gorilla/mux"
 	"github.com/mrizalr/urlshortener/domain"
@@ -20,12 +22,36 @@ type UrlHandler struct {
 
 func NewUrlHandler(urlUsecase domain.UrlUsecase, m *mux.Router) {
 	handler := UrlHandler{urlUsecase}
+	m.HandleFunc("/", handler.HomeHandler).Methods("GET")
+	m.HandleFunc("/{short}", handler.getUrlByShort).Methods("GET")
+
 	router_v1 := m.PathPrefix("/api/v1/url").Subrouter()
 
 	router_v1.Path("/").HandlerFunc(handler.getAllUrl).Methods("GET")
 	router_v1.Path("/create").HandlerFunc(handler.createNewUrlShortener).Methods("POST")
 	router_v1.Path("/{id}").HandlerFunc(handler.deleteUrlByID).Methods("DELETE")
-	router_v1.Path("/{short}").HandlerFunc(handler.getUrlByShort).Methods("GET")
+
+}
+
+func (h *UrlHandler) HomeHandler(res http.ResponseWriter, req *http.Request) {
+	filePath := path.Join("views", "index.html")
+	tmpl, err := template.ParseFiles(filePath)
+	if err != nil {
+		utils.FormatResponse(res, &utils.ResponseErrorParams{
+			Code:   http.StatusBadGateway,
+			Status: "Bad gateway",
+			Errors: []string{err.Error()},
+		})
+	}
+
+	err = tmpl.Execute(res, nil)
+	if err != nil {
+		utils.FormatResponse(res, &utils.ResponseErrorParams{
+			Code:   http.StatusBadGateway,
+			Status: "Bad gateway",
+			Errors: []string{err.Error()},
+		})
+	}
 }
 
 func (h *UrlHandler) createNewUrlShortener(res http.ResponseWriter, req *http.Request) {
