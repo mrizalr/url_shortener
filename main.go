@@ -56,5 +56,5 @@ func main() {
 	urlUsecase := usecase.NewUrlUsecase(urlRepository)
 	delivery.NewUrlHandler(urlUsecase, _mux)
 
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", 8080), _mux))
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")), _mux))
 }
