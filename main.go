@@ -48,7 +48,7 @@ func main() {
 	}
 
 	_mux := mux.NewRouter().StrictSlash(true)
-	_mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./views"))))
+	_mux.Handle("/views/", http.FileServer(http.Dir("./views")))
 
 	urlRepository := repository.NewUrlRepository(db)
 	urlUsecase := usecase.NewUrlUsecase(urlRepository)
