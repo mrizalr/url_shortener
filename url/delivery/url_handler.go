@@ -23,7 +23,7 @@ type UrlHandler struct {
 func NewUrlHandler(urlUsecase domain.UrlUsecase, m *mux.Router) {
 	handler := UrlHandler{urlUsecase}
 	m.HandleFunc("/", handler.HomeHandler).Methods("GET")
-	m.HandleFunc("/{short}", handler.getUrlByShort).Methods("GET")
+	m.HandleFunc("/{short}", func(w http.ResponseWriter, r *http.Request) { w.Write([]byte("asd")) })
 
 	router_v1 := m.PathPrefix("/api/v1/url").Subrouter()
 

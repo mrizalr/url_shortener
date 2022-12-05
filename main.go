@@ -48,11 +48,13 @@ func main() {
 	}
 
 	_mux := mux.NewRouter().StrictSlash(true)
-	_mux.Handle("/views/", http.FileServer(http.Dir("./views")))
+
+	cssHandler := http.FileServer(http.Dir("assets"))
+	_mux.PathPrefix("/static/").Handler(http.StripPrefix("/static/", cssHandler))
 
 	urlRepository := repository.NewUrlRepository(db)
 	urlUsecase := usecase.NewUrlUsecase(urlRepository)
 	delivery.NewUrlHandler(urlUsecase, _mux)
 
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")), _mux))
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", 8080), _mux))
 }
