@@ -17,6 +17,7 @@ function onSubmitBtnClicked(){
     }).
     then(res => res.json()).
     then(json => {
+        console.log(json)
         var res = JSON.parse(json)
 
         if(res.status_code != 201){
