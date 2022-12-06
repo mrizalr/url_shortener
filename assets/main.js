@@ -16,5 +16,13 @@ function onSubmitBtnClicked(){
         body: JSON.stringify(reqBody)
     }).
     then(res => res.json()).
-    then(json => console.log(json))
+    then(json => {
+        var res = JSON.parse(json)
+
+        if(res.status_code != 201){
+            urlValue = "URL isn't valid"
+        } else {
+            urlValue = "https://shrt.go/"+res.data.short_url
+        }
+    })
 }
