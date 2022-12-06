@@ -20,9 +20,9 @@ function onSubmitBtnClicked(){
         var res = JSON.parse(json)
 
         if(res.status_code != 201){
-            urlValue = "URL isn't valid"
+            urlTextfield.value = "URL isn't valid"
         } else {
-            urlValue = "https://shrt.go/"+res.data.short_url
+            urlTextfield.value = "https://shrt.go/"+res.data.short_url
         }
     })
 }
