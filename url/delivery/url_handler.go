@@ -37,20 +37,12 @@ func (h *UrlHandler) HomeHandler(res http.ResponseWriter, req *http.Request) {
 	filePath := path.Join("views", "index.html")
 	tmpl, err := template.ParseFiles(filePath)
 	if err != nil {
-		utils.FormatResponse(res, &utils.ResponseErrorParams{
-			Code:   http.StatusBadGateway,
-			Status: "Bad gateway",
-			Errors: []string{err.Error()},
-		})
+		res.Write([]byte("Bad gateway"))
 	}
 
 	err = tmpl.Execute(res, nil)
 	if err != nil {
-		utils.FormatResponse(res, &utils.ResponseErrorParams{
-			Code:   http.StatusBadGateway,
-			Status: "Bad gateway",
-			Errors: []string{err.Error()},
-		})
+		res.Write([]byte("Bad gateway"))
 	}
 }
 
@@ -180,11 +172,17 @@ func (h *UrlHandler) getUrlByShort(res http.ResponseWriter, req *http.Request) {
 	}()
 
 	if err := <-errChan; err != nil {
-		utils.FormatResponse(res, &utils.ResponseErrorParams{
-			Code:   http.StatusBadGateway,
-			Status: "Bad gateway",
-			Errors: []string{err.Error()},
-		})
+		filePath := path.Join("views", "404.html")
+		tmpl, err := template.ParseFiles(filePath)
+		if err != nil {
+			res.Write([]byte("Bad gateway"))
+		}
+
+		err = tmpl.Execute(res, nil)
+		if err != nil {
+			res.Write([]byte("Bad gateway"))
+		}
+
 		return
 	}
 
