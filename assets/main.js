@@ -7,7 +7,10 @@ function onSubmitBtnClicked(){
     urlValue = urlTextfield.value
     reqBody = { url: urlValue }
 
-    fetch("https://urlshortener-production-f981.up.railway.app/api/v1/url/create", {
+    fetch("https://urlshortener-production-f981.up.railway.app//api/v1/url/create", {
+        headers: {
+            "Access-Control-Allow-Origin":"*"
+        },
         method: "POST",
         body: JSON.stringify(reqBody)
     }).
