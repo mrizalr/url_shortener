@@ -40,6 +40,19 @@ func (h *UrlHandler) HomeHandler(res http.ResponseWriter, req *http.Request) {
 		res.Write([]byte("Bad gateway"))
 	}
 
+	cardTemplate := `<div class="card">
+						<div class="short-link">%s</div>
+						<div class="web-title">%s</div>
+						<div class="web-url">%s</div>
+						<div class="created-date">%s</div>
+						<div class="clicked-count">
+							<span class="count">%d</span>
+							clicks
+						</div>
+					</div>`
+
+	_ = cardTemplate
+
 	err = tmpl.Execute(res, nil)
 	if err != nil {
 		res.Write([]byte("Bad gateway"))
@@ -76,7 +89,13 @@ func (h *UrlHandler) createNewUrlShortener(res http.ResponseWriter, req *http.Re
 		return
 	}
 
-	url, err := h.urlUsecase.CreateNewURL(context.Background(), requestBody.Url)
+	ctx := context.Background()
+	if storedCookie, _ := req.Cookie("user_id"); storedCookie != nil {
+		userId := storedCookie.Value
+		ctx = context.WithValue(ctx, "user_id", userId)
+	}
+
+	url, err := h.urlUsecase.CreateNewURL(ctx, requestBody.Url)
 	if err != nil {
 		errorParams := utils.ResponseErrorParams{
 			Code:   http.StatusBadGateway,
@@ -98,6 +117,11 @@ func (h *UrlHandler) createNewUrlShortener(res http.ResponseWriter, req *http.Re
 		Code:   http.StatusCreated,
 		Status: "Success Created",
 		Data:   url,
+	})
+
+	http.SetCookie(res, &http.Cookie{
+		Name:  "user_id",
+		Value: url.UserId,
 	})
 }
 

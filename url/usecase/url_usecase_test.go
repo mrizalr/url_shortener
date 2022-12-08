@@ -25,6 +25,7 @@ func TestCreateNewURL(t *testing.T) {
 		ShortUrl:   "s5HbKw",
 		ClickCount: 172,
 		CreatedAt:  time.Now().Unix(),
+		UserId:     "asd6asd613",
 	}
 
 	// mock test with the case if the same random url is found in the database
@@ -59,6 +60,7 @@ func TestCreateNewURL(t *testing.T) {
 	assert.Equal(t, result.Url, url.Url)
 	assert.NotEqual(t, "", url.ShortUrl)
 	assert.NotZero(t, url.CreatedAt)
+	assert.NotEqual(t, "", url.UserId)
 }
 
 func TestFindUrlByShort(t *testing.T) {

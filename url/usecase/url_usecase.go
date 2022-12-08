@@ -14,8 +14,10 @@ import (
 )
 
 type config struct {
-	UrlMinLength int
-	UrlMaxLength int
+	UrlMinLength    int
+	UrlMaxLength    int
+	UserIdMinLength int
+	UserIdMaxLength int
 }
 
 type urlUsecase struct {
@@ -23,16 +25,22 @@ type urlUsecase struct {
 }
 
 var _config config = config{
-	UrlMinLength: 5,
-	UrlMaxLength: 8,
+	UrlMinLength:    5,
+	UrlMaxLength:    8,
+	UserIdMinLength: 9,
+	UserIdMaxLength: 11,
 }
 
 func NewUrlUsecase(urlRepository domain.UrlRepository) domain.UrlUsecase {
 	return &urlUsecase{urlRepository}
 }
 
-func generateRandom() string {
+func generateRandomURL() string {
 	return utils.GetRandomURL(_config.UrlMinLength, _config.UrlMaxLength)
+}
+
+func generateRandomUserID() string {
+	return utils.GetRandomURL(_config.UserIdMinLength, _config.UserIdMaxLength)
 }
 
 func (u *urlUsecase) CreateNewURL(ctx context.Context, url string) (domain.Url, error) {
@@ -54,19 +62,28 @@ func (u *urlUsecase) CreateNewURL(ctx context.Context, url string) (domain.Url, 
 		url = fmt.Sprintf("https://%s", url)
 	}
 
-	shortUrl := generateRandom()
+	shortUrl := generateRandomURL()
 	for {
 		_, err := u.urlRepository.FindByShortUrl(context.Background(), shortUrl)
 		if err == sql.ErrNoRows {
 			break
 		}
-		shortUrl = generateRandom()
+		shortUrl = generateRandomURL()
 		time.Sleep(time.Nanosecond)
 	}
 
+	var userId string
+	if val := ctx.Value("user_id"); val != nil {
+		userId = val.(string)
+	} else {
+		userId = generateRandomUserID()
+	}
+
 	params := domain.CreateUrlParams{
-		Url:      url,
-		ShortUrl: shortUrl,
+		Url:       url,
+		ShortUrl:  shortUrl,
+		CreatedAt: time.Now().Unix(),
+		UserId:    userId,
 	}
 
 	_, err = u.urlRepository.Create(context.Background(), params)

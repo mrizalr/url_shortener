@@ -22,7 +22,7 @@ func NewUrlRepository(db *sql.DB) domain.UrlRepository {
 // Returning inserted url_id (int) if success, and error if failed
 
 func (r *urlRepository) Create(ctx context.Context, params domain.CreateUrlParams) (int, error) {
-	sqlRes, err := r.db.ExecContext(ctx, queries.InsertURL, params.Url, params.ShortUrl)
+	sqlRes, err := r.db.ExecContext(ctx, queries.InsertURL, params.Url, params.ShortUrl, params.CreatedAt, params.UserId)
 	if err != nil {
 		return 0, err
 	}
@@ -42,7 +42,7 @@ func (r *urlRepository) Create(ctx context.Context, params domain.CreateUrlParam
 func (r *urlRepository) FindByShortUrl(ctx context.Context, shortUrl string) (domain.Url, error) {
 	url := domain.Url{}
 	err := r.db.QueryRowContext(ctx, queries.FindByShort, shortUrl).
-		Scan(&url.ID, &url.Url, &url.ShortUrl, &url.ClickCount, &url.CreatedAt)
+		Scan(&url.ID, &url.Url, &url.ShortUrl, &url.ClickCount, &url.CreatedAt, &url.UserId)
 
 	if err != nil {
 		return url, err
@@ -58,7 +58,7 @@ func (r *urlRepository) FindByShortUrl(ctx context.Context, shortUrl string) (do
 func (r *urlRepository) FindByID(ctx context.Context, id int) (domain.Url, error) {
 	url := domain.Url{}
 	err := r.db.QueryRowContext(ctx, queries.FindByID, id).
-		Scan(&url.ID, &url.Url, &url.ShortUrl, &url.ClickCount, &url.CreatedAt)
+		Scan(&url.ID, &url.Url, &url.ShortUrl, &url.ClickCount, &url.CreatedAt, &url.UserId)
 
 	if err != nil {
 		return url, err
@@ -81,7 +81,7 @@ func (r *urlRepository) FindAll(ctx context.Context) ([]domain.Url, error) {
 
 	for rows.Next() {
 		url := domain.Url{}
-		err = rows.Scan(&url.ID, &url.Url, &url.ShortUrl, &url.ClickCount, &url.CreatedAt)
+		err = rows.Scan(&url.ID, &url.Url, &url.ShortUrl, &url.ClickCount, &url.CreatedAt, &url.UserId)
 		if err != nil {
 			return urls, err
 		}

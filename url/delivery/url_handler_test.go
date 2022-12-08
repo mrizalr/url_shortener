@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"net/http"
 	"net/http/httptest"
 	"testing"
 	"time"
@@ -24,14 +25,19 @@ func TestCreateNewUrlHandler(t *testing.T) {
 		ShortUrl:   "h52GbxA",
 		ClickCount: 0,
 		CreatedAt:  time.Now().Unix(),
+		UserId:     "yasd6123asd",
 	}
 
-	mockUsecase.On("CreateNewURL", context.Background(), mock.AnythingOfType("string")).Return(usecaseResult, nil)
+	mockUsecase.On("CreateNewURL", context.WithValue(context.Background(), "user_id", "yasd6123asd"), mock.AnythingOfType("string")).Return(usecaseResult, nil)
 
 	reqJson := fmt.Sprintf(`{"url":"%s"}`, usecaseResult.Url)
 	reqBody := bytes.NewReader([]byte(reqJson))
 
 	req := httptest.NewRequest("POST", "/api/v1/url/create", reqBody)
+	req.AddCookie(&http.Cookie{
+		Name:  "user_id",
+		Value: "yasd6123asd",
+	})
 	res := httptest.NewRecorder()
 
 	handler := UrlHandler{mockUsecase}
@@ -52,9 +58,10 @@ func TestCreateNewUrlHandler(t *testing.T) {
 			"url":"www.github.com/mrizalr",
 			"short_url":"h52GbxA",
 			"click_count":0,
-			"created_at":%d
+			"created_at":%d,
+			"user_id":"%s"
 		}
-	}`, time.Now().Unix())
+	}`, time.Now().Unix(), usecaseResult.UserId)
 
 	mockUsecase.AssertExpectations(t)
 	assert.JSONEq(t, expect, string(resultBody))
@@ -69,12 +76,14 @@ func TestGetAllUrlHandler(t *testing.T) {
 			ShortUrl:   "h52GbxA",
 			ClickCount: 163,
 			CreatedAt:  time.Date(2021, 03, 23, 12, 13, 32, 43, time.Local).Unix(),
+			UserId:     "jasd17263hjasd",
 		}, {
 			ID:         2,
 			Url:        "www.linkedin.com/in/mrizalr",
 			ShortUrl:   "hJS62h",
 			ClickCount: 123,
 			CreatedAt:  time.Date(2021, 03, 23, 12, 13, 32, 43, time.Local).Unix(),
+			UserId:     "jasd17263hjasd",
 		},
 	}
 
@@ -101,16 +110,18 @@ func TestGetAllUrlHandler(t *testing.T) {
 			"url":"www.github.com/mrizalr",
 			"short_url":"h52GbxA",
 			"click_count":163,
-			"created_at":%d
+			"created_at":%d,
+			"user_id":"%s"
 		},
 		{
 			"id":2,
 			"url":"www.linkedin.com/in/mrizalr",
 			"short_url":"hJS62h",
 			"click_count":123,
-			"created_at":%d
+			"created_at":%d,
+			"user_id":"%s"
 		}]
-	}`, usecaseResult[0].CreatedAt, usecaseResult[1].CreatedAt)
+	}`, usecaseResult[0].CreatedAt, usecaseResult[0].UserId, usecaseResult[1].CreatedAt, usecaseResult[1].UserId)
 
 	mockUsecase.AssertExpectations(t)
 	assert.JSONEq(t, expect, string(resultBody))
@@ -124,6 +135,7 @@ func TestDeleteUrlByIDHandler(t *testing.T) {
 		ShortUrl:   "h52GbxA",
 		ClickCount: 163,
 		CreatedAt:  time.Date(2021, 03, 23, 12, 13, 32, 43, time.Local).Unix(),
+		UserId:     "jasd67123asd",
 	}
 
 	mockUsecase.On("DeleteByID", context.Background(), usecaseResult.ID).Return(usecaseResult, nil)
@@ -152,9 +164,10 @@ func TestDeleteUrlByIDHandler(t *testing.T) {
 			"url":"www.github.com/mrizalr",
 			"short_url":"h52GbxA",
 			"click_count":163,
-			"created_at":%d
+			"created_at":%d,
+			"user_id":"%s"
 		}
-	}`, usecaseResult.CreatedAt)
+	}`, usecaseResult.CreatedAt, usecaseResult.UserId)
 
 	mockUsecase.AssertExpectations(t)
 	assert.JSONEq(t, expect, string(resultBody))

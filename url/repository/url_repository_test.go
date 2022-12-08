@@ -25,12 +25,14 @@ func TestCreateURL(t *testing.T) {
 	defer db.Close()
 
 	params := domain.CreateUrlParams{
-		Url:      "www.github.com/mrizalr/urlshortener",
-		ShortUrl: "xhYsg23",
+		Url:       "www.github.com/mrizalr/urlshortener",
+		ShortUrl:  "xhYsg23",
+		CreatedAt: time.Now().Unix(),
+		UserId:    "hd6GSj2bGFSh112",
 	}
 
 	mock.ExpectExec(queries.InsertURL).
-		WithArgs(params.Url, params.ShortUrl).
+		WithArgs(params.Url, params.ShortUrl, params.CreatedAt, params.UserId).
 		WillReturnResult(sqlmock.NewResult(1, 1))
 
 	repo := urlRepository{db}
@@ -53,10 +55,11 @@ func TestFindByShortUrl(t *testing.T) {
 		ShortUrl:   "xh52VsC",
 		ClickCount: 162,
 		CreatedAt:  time.Now().Unix(),
+		UserId:     "hd6GSj2bGFSh112",
 	}
 
-	rows := mock.NewRows([]string{"id", "url", "short_url", "click_count", "created_at"}).
-		AddRow(params.ID, params.Url, params.ShortUrl, params.ClickCount, params.CreatedAt)
+	rows := mock.NewRows([]string{"id", "url", "short_url", "click_count", "created_at", "user_id"}).
+		AddRow(params.ID, params.Url, params.ShortUrl, params.ClickCount, params.CreatedAt, params.UserId)
 	mock.ExpectQuery(queries.FindByShort).WithArgs(params.ShortUrl).WillReturnRows(rows)
 
 	repo := urlRepository{db}
@@ -72,6 +75,7 @@ func TestFindByShortUrl(t *testing.T) {
 	assert.Equal(t, params.ShortUrl, url.ShortUrl)
 	assert.Equal(t, params.ClickCount, url.ClickCount)
 	assert.Equal(t, params.CreatedAt, url.CreatedAt)
+	assert.Equal(t, params.UserId, url.UserId)
 }
 
 func TestFindAll(t *testing.T) {
@@ -85,6 +89,7 @@ func TestFindAll(t *testing.T) {
 			ShortUrl:   "2HsEgd",
 			ClickCount: 218,
 			CreatedAt:  time.Now().Unix(),
+			UserId:     "asHJS661GGsdGa",
 		},
 		{
 			ID:         2,
@@ -92,12 +97,13 @@ func TestFindAll(t *testing.T) {
 			ShortUrl:   "jUHH23x",
 			ClickCount: 63,
 			CreatedAt:  time.Now().Unix(),
+			UserId:     "asHJS661GGsdGa",
 		},
 	}
 
-	rows := mock.NewRows([]string{"id", "url", "short_url", "click_count", "created_at"})
+	rows := mock.NewRows([]string{"id", "url", "short_url", "click_count", "created_at", "user_id"})
 	for _, param := range params {
-		rows.AddRow(param.ID, param.Url, param.ShortUrl, param.ClickCount, param.CreatedAt)
+		rows.AddRow(param.ID, param.Url, param.ShortUrl, param.ClickCount, param.CreatedAt, param.UserId)
 	}
 
 	mock.ExpectQuery(queries.FindAll).WillReturnRows(rows)
@@ -122,6 +128,7 @@ func TestDeleteByID(t *testing.T) {
 		ShortUrl:   "ofJA32",
 		ClickCount: 749,
 		CreatedAt:  time.Now().Unix(),
+		UserId:     "asHJS661GGsdGa",
 	}
 
 	mock.ExpectExec(queries.DeleteByID).WithArgs(params.ID).
@@ -146,6 +153,7 @@ func TestIncrementUrl(t *testing.T) {
 		ShortUrl:   "ofJA32",
 		ClickCount: 12,
 		CreatedAt:  time.Now().Unix(),
+		UserId:     "asHJS661GGsdGa",
 	}
 
 	mock.ExpectExec(queries.IncrementClickCount).

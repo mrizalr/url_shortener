@@ -8,11 +8,14 @@ type Url struct {
 	ShortUrl   string `json:"short_url"`
 	ClickCount int    `json:"click_count"`
 	CreatedAt  int64  `json:"created_at"`
+	UserId     string `json:"user_id"`
 }
 
 type CreateUrlParams struct {
-	Url      string `json:"url"`
-	ShortUrl string `json:"short_url"`
+	Url       string `json:"url"`
+	ShortUrl  string `json:"short_url"`
+	CreatedAt int64  `json:"created_at"`
+	UserId    string `json:"user_id"`
 }
 
 type UrlRepository interface {

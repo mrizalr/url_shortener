@@ -4,5 +4,6 @@ CREATE TABLE urls (
     short_url VARCHAR(15) NOT NULL UNIQUE,
     click_count INT UNSIGNED DEFAULT 0,
     created_at INT UNSIGNED DEFAULT 0,
-    INDEX (short_url)
+    user_id VARCHAR(30) NOT NULL,
+    INDEX (short_url, user_id)
 );
