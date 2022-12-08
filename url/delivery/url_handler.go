@@ -113,15 +113,15 @@ func (h *UrlHandler) createNewUrlShortener(res http.ResponseWriter, req *http.Re
 		return
 	}
 
+	http.SetCookie(res, &http.Cookie{
+		Name:  "user_id",
+		Value: url.UserId,
+	})
+
 	utils.FormatResponse(res, &utils.ResponseSuccessParams{
 		Code:   http.StatusCreated,
 		Status: "Success Created",
 		Data:   url,
-	})
-
-	http.SetCookie(res, &http.Cookie{
-		Name:  "user_id",
-		Value: url.UserId,
 	})
 }
 
