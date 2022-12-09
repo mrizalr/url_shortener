@@ -86,7 +86,7 @@ func (h *UrlHandler) HomeHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	data := map[string]interface{}{
-		"cards": cards,
+		"cards": cards + " cards",
 	}
 
 	err = tmpl.Execute(res, data)
