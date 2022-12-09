@@ -41,7 +41,6 @@ func (h *UrlHandler) HomeHandler(res http.ResponseWriter, req *http.Request) {
 	tmpl, err := template.ParseFiles(filePath)
 	if err != nil {
 		res.Write([]byte("Bad gateway"))
-		return
 	}
 
 	errs := ""
