@@ -58,7 +58,7 @@ func (h *UrlHandler) HomeHandler(res http.ResponseWriter, req *http.Request) {
 
 	cards := ""
 	for _, c := range req.Cookies() {
-		res.Write([]byte(c.Name))
+		res.Write([]byte(c.Name + " = \n"))
 		res.Write([]byte(c.Value))
 	}
 	if storedCookie, _ := req.Cookie("user_id"); storedCookie != nil {
