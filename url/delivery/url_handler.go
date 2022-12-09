@@ -152,12 +152,8 @@ func (h *UrlHandler) createNewUrlShortener(res http.ResponseWriter, req *http.Re
 	}
 
 	http.SetCookie(res, &http.Cookie{
-		Name:     "user_id",
-		Value:    url.UserId,
-		Path:     "/",
-		Secure:   false,
-		HttpOnly: true,
-		SameSite: http.SameSiteNoneMode,
+		Name:  "user_id",
+		Value: url.UserId,
 	})
 
 	utils.FormatResponse(res, &utils.ResponseSuccessParams{
