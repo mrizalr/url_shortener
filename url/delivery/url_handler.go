@@ -57,6 +57,9 @@ func (h *UrlHandler) HomeHandler(res http.ResponseWriter, req *http.Request) {
 					</div>`
 
 	cards := ""
+	c, _ := req.Cookie("user_id")
+	res.Write([]byte(c.Value + " cookie"))
+
 	if storedCookie, _ := req.Cookie("user_id"); storedCookie != nil {
 		userId := storedCookie.Value
 		urls, err := h.urlUsecase.GetLastUrlCreated(context.Background(), userId)
@@ -84,7 +87,6 @@ func (h *UrlHandler) HomeHandler(res http.ResponseWriter, req *http.Request) {
 			createdAt := time.Unix(url.CreatedAt, 0)
 			cards += fmt.Sprintf(cardTemplate, url.ShortUrl, webtitle, url.Url, createdAt, url.ClickCount)
 		}
-		res.Write([]byte(userId))
 	}
 
 	data := map[string]interface{}{
