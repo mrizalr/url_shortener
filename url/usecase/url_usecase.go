@@ -131,3 +131,8 @@ func (u *urlUsecase) IncrementClickCount(ctx context.Context, id int) error {
 
 	return nil
 }
+
+func (u *urlUsecase) GetLastUrlCreated(ctx context.Context, userId string) ([]domain.Url, error) {
+	urls, err := u.urlRepository.GetLastUrlCreated(ctx, userId)
+	return urls, err
+}

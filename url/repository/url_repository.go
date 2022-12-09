@@ -131,3 +131,28 @@ func (r *urlRepository) IncrementURLClick(ctx context.Context, ID int, count int
 
 	return nil
 }
+
+// Getting 3 last url created
+// Receiving context, and user_id (string as parameter
+// Returning 1-3 url data if success, and error if failed
+
+func (r *urlRepository) GetLastUrlCreated(ctx context.Context, userId string) ([]domain.Url, error) {
+	urls := []domain.Url{}
+	rows, err := r.db.QueryContext(ctx, queries.GetLastUrl, userId)
+	if err != nil {
+		return urls, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		url := domain.Url{}
+		err := rows.Scan(&url.ID, &url.Url, &url.ShortUrl, &url.ClickCount, &url.CreatedAt, &url.UserId)
+		if err != nil {
+			return urls, err
+		}
+
+		urls = append(urls, url)
+	}
+
+	return urls, nil
+}

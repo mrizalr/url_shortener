@@ -167,3 +167,47 @@ func TestIncrementUrl(t *testing.T) {
 	err := repo.IncrementURLClick(ctx, 1, 13)
 	assert.NoError(t, err)
 }
+
+func TestGetLastUrlCreated(t *testing.T) {
+	db, mock := NewMock()
+	defer db.Close()
+
+	result := []domain.Url{{
+		ID:         1,
+		Url:        "www.github.com/1",
+		ShortUrl:   "j723HS",
+		ClickCount: 192,
+		CreatedAt:  time.Now().Add(-2 * time.Hour).Unix(),
+		UserId:     "sf7y612aHAsd",
+	}, {
+		ID:         2,
+		Url:        "www.github.com/3",
+		ShortUrl:   "j723HS",
+		ClickCount: 192,
+		CreatedAt:  time.Now().Add(-1 * time.Hour).Unix(),
+		UserId:     "sf7y612aHAsd",
+	}, {
+		ID:         3,
+		Url:        "www.github.com",
+		ShortUrl:   "j723HS",
+		ClickCount: 192,
+		CreatedAt:  time.Now().Unix(),
+		UserId:     "sf7y612aHAsd",
+	}}
+
+	rows := mock.NewRows([]string{"id", "url", "short_url", "clicked_count", "created_at", "user_id"})
+	for _, val := range result {
+		rows.AddRow(val.ID, val.Url, val.ShortUrl, val.ClickCount, val.CreatedAt, val.UserId)
+	}
+
+	mock.ExpectQuery(queries.GetLastUrl).WithArgs(result[0].UserId).WillReturnRows(rows)
+
+	repo := urlRepository{db}
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	urls, err := repo.GetLastUrlCreated(ctx, result[0].UserId)
+	assert.NoError(t, err)
+
+	assert.Len(t, urls, 3)
+}

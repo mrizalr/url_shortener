@@ -17,3 +17,6 @@ const DeleteByID = `DELETE FROM urls WHERE id = ?`
 
 //Increment click_count when url opened
 const IncrementClickCount = `UPDATE urls SET click_count = ? WHERE id = ?`
+
+//Get last url created
+const GetLastUrl = `SELECT id, url, short_url, click_count, created_at, user_id from urls WHERE user_id = ? ORDER BY created_at DESC LIMIT 3`

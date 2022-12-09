@@ -3,6 +3,7 @@ package delivery
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"path"
@@ -10,7 +11,9 @@ import (
 	"strings"
 	"sync"
 	"text/template"
+	"time"
 
+	"github.com/PuerkitoBio/goquery"
 	"github.com/gorilla/mux"
 	"github.com/mrizalr/urlshortener/domain"
 	"github.com/mrizalr/urlshortener/utils"
@@ -51,9 +54,27 @@ func (h *UrlHandler) HomeHandler(res http.ResponseWriter, req *http.Request) {
 						</div>
 					</div>`
 
-	_ = cardTemplate
+	data := ""
+	if storedCookie, _ := req.Cookie("user_id"); storedCookie != nil {
+		userId := storedCookie.Value
+		urls, _ := h.urlUsecase.GetLastUrlCreated(context.Background(), userId)
 
-	err = tmpl.Execute(res, nil)
+		for _, url := range urls {
+			var webtitle string
+			res, _ := http.Get(url.Url)
+			defer res.Body.Close()
+
+			if res.StatusCode == 200 {
+				doc, _ := goquery.NewDocumentFromReader(res.Body)
+				webtitle = doc.Find("title").Text()
+			}
+
+			createdAt := time.Unix(url.CreatedAt, 0)
+			data += fmt.Sprintf(cardTemplate, url.ShortUrl, webtitle, url.Url, createdAt, url.ClickCount)
+		}
+	}
+
+	err = tmpl.Execute(res, data)
 	if err != nil {
 		res.Write([]byte("Bad gateway"))
 	}

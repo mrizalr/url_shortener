@@ -40,3 +40,8 @@ func (r *UrlRepository) IncrementURLClick(ctx context.Context, id int, count int
 	args := r.Mock.Called(ctx, id, count)
 	return args.Error(0)
 }
+
+func (r *UrlRepository) GetLastUrlCreated(ctx context.Context, userId string) ([]domain.Url, error) {
+	args := r.Mock.Called(ctx, userId)
+	return args.Get(0).([]domain.Url), args.Error(1)
+}

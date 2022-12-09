@@ -162,3 +162,38 @@ func TestIncrementCountClick(t *testing.T) {
 	err := urlUsecase.IncrementClickCount(context.Background(), idTest)
 	assert.NoError(t, err)
 }
+
+func TestGetLastUrl(t *testing.T) {
+	repoMock := new(mocks.UrlRepository)
+	urlUsecase := urlUsecase{repoMock}
+
+	result := []domain.Url{{
+		ID:         1,
+		Url:        "www.github.com/1",
+		ShortUrl:   "j723HS",
+		ClickCount: 192,
+		CreatedAt:  time.Now().Add(-2 * time.Hour).Unix(),
+		UserId:     "sf7y612aHAsd",
+	}, {
+		ID:         2,
+		Url:        "www.github.com/3",
+		ShortUrl:   "j723HS",
+		ClickCount: 192,
+		CreatedAt:  time.Now().Add(-1 * time.Hour).Unix(),
+		UserId:     "sf7y612aHAsd",
+	}, {
+		ID:         3,
+		Url:        "www.github.com",
+		ShortUrl:   "j723HS",
+		ClickCount: 192,
+		CreatedAt:  time.Now().Unix(),
+		UserId:     "sf7y612aHAsd",
+	}}
+
+	repoMock.On("GetLastUrlCreated", context.Background(), result[0].UserId).Return(result, nil)
+
+	urls, err := urlUsecase.GetLastUrlCreated(context.Background(), result[0].UserId)
+	repoMock.AssertExpectations(t)
+	assert.NoError(t, err)
+	assert.Len(t, urls, 3)
+}

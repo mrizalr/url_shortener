@@ -35,3 +35,8 @@ func (u *UrlUsecase) IncrementClickCount(ctx context.Context, id int) error {
 	args := u.Mock.Called(ctx, id)
 	return args.Error(0)
 }
+
+func (u *UrlUsecase) GetLastUrlCreated(ctx context.Context, userId string) ([]domain.Url, error) {
+	args := u.Mock.Called(ctx, userId)
+	return args.Get(0).([]domain.Url), args.Error(1)
+}
