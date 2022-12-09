@@ -41,8 +41,10 @@ func (h *UrlHandler) HomeHandler(res http.ResponseWriter, req *http.Request) {
 	tmpl, err := template.ParseFiles(filePath)
 	if err != nil {
 		res.Write([]byte("Bad gateway"))
+		return
 	}
 
+	errs := ""
 	cardTemplate := `<div class="card">
 						<div class="short-link">%s</div>
 						<div class="web-title">%s</div>
@@ -57,16 +59,26 @@ func (h *UrlHandler) HomeHandler(res http.ResponseWriter, req *http.Request) {
 	data := ""
 	if storedCookie, _ := req.Cookie("user_id"); storedCookie != nil {
 		userId := storedCookie.Value
-		urls, _ := h.urlUsecase.GetLastUrlCreated(context.Background(), userId)
+		urls, err := h.urlUsecase.GetLastUrlCreated(context.Background(), userId)
+		if err != nil {
+			errs += err.Error() + "|"
+		}
 
 		for _, url := range urls {
 			var webtitle string
-			res, _ := http.Get(url.Url)
+			res, err := http.Get(url.Url)
+			if err != nil {
+				errs += err.Error() + "|"
+			}
 			defer res.Body.Close()
 
 			if res.StatusCode == 200 {
 				doc, _ := goquery.NewDocumentFromReader(res.Body)
 				webtitle = doc.Find("title").Text()
+			} else {
+				if err != nil {
+					errs += fmt.Sprintf("status code %d", res.StatusCode) + "|"
+				}
 			}
 
 			createdAt := time.Unix(url.CreatedAt, 0)
@@ -76,7 +88,8 @@ func (h *UrlHandler) HomeHandler(res http.ResponseWriter, req *http.Request) {
 
 	err = tmpl.Execute(res, data)
 	if err != nil {
-		res.Write([]byte("Bad gateway"))
+		errs += err.Error() + "|"
+		res.Write([]byte(errs))
 	}
 }
 
