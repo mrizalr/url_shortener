@@ -56,9 +56,6 @@ func (h *UrlHandler) HomeHandler(res http.ResponseWriter, req *http.Request) {
 					</div>`
 
 	cards := ""
-	c, _ := req.Cookie("user_id")
-	res.Write([]byte(c.Value + " cookie"))
-
 	if storedCookie, _ := req.Cookie("user_id"); storedCookie != nil {
 		userId := storedCookie.Value
 		urls, err := h.urlUsecase.GetLastUrlCreated(context.Background(), userId)
