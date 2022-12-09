@@ -57,6 +57,9 @@ func (h *UrlHandler) HomeHandler(res http.ResponseWriter, req *http.Request) {
 					</div>`
 
 	cards := ""
+	c, err := req.Cookie("user_id")
+	res.Write([]byte(c.Value + "|" + err.Error()))
+
 	if storedCookie, _ := req.Cookie("user_id"); storedCookie != nil {
 		userId := storedCookie.Value
 		urls, err := h.urlUsecase.GetLastUrlCreated(context.Background(), userId)
@@ -87,11 +90,10 @@ func (h *UrlHandler) HomeHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	data := map[string]interface{}{
-		"cards": cards + " cards",
+		"cards": cards,
 	}
 
 	err = tmpl.Execute(res, data)
-	res.Write([]byte(cards + " cards"))
 	if err != nil {
 		errs += err.Error() + "|"
 		res.Write([]byte(errs))
