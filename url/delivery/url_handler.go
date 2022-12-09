@@ -128,7 +128,7 @@ func (h *UrlHandler) createNewUrlShortener(res http.ResponseWriter, req *http.Re
 	}
 
 	ctx := context.Background()
-	if storedCookie, _ := req.Cookie("url_user"); storedCookie != nil {
+	if storedCookie, _ := req.Cookie("user_id"); storedCookie != nil {
 		userId := storedCookie.Value
 		ctx = context.WithValue(ctx, "user_id", userId)
 	}
@@ -150,11 +150,6 @@ func (h *UrlHandler) createNewUrlShortener(res http.ResponseWriter, req *http.Re
 		utils.FormatResponse(res, &errorParams)
 		return
 	}
-
-	http.SetCookie(res, &http.Cookie{
-		Name:  "url_user",
-		Value: url.UserId,
-	})
 
 	utils.FormatResponse(res, &utils.ResponseSuccessParams{
 		Code:   http.StatusCreated,
