@@ -84,6 +84,8 @@ func (h *UrlHandler) HomeHandler(res http.ResponseWriter, req *http.Request) {
 			createdAt := time.Unix(url.CreatedAt, 0)
 			cards += fmt.Sprintf(cardTemplate, url.ShortUrl, webtitle, url.Url, createdAt, url.ClickCount)
 		}
+	} else {
+		res.Write([]byte("cookie not found"))
 	}
 
 	data := map[string]interface{}{
