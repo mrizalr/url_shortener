@@ -41,6 +41,7 @@ func (h *UrlHandler) HomeHandler(res http.ResponseWriter, req *http.Request) {
 	tmpl, err := template.ParseFiles(filePath)
 	if err != nil {
 		res.Write([]byte("Bad gateway"))
+		return
 	}
 
 	errs := ""
@@ -90,7 +91,7 @@ func (h *UrlHandler) HomeHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	err = tmpl.Execute(res, data)
-	res.Write([]byte(cards))
+	res.Write([]byte(cards + " cards"))
 	if err != nil {
 		errs += err.Error() + "|"
 		res.Write([]byte(errs))
