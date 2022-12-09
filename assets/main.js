@@ -21,9 +21,6 @@ function onSubmitBtnClicked() {
                 urlTextfield.value = "URL isn't valid"
             } else {
                 urlTextfield.value = "https://shrt.go/" + json.data.short_url
-                document.cookie = "user_id=" + json.data.user_id
             }
         })
 }
-
-console.log(document.cookie)
