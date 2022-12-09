@@ -84,6 +84,7 @@ func (h *UrlHandler) HomeHandler(res http.ResponseWriter, req *http.Request) {
 			createdAt := time.Unix(url.CreatedAt, 0)
 			cards += fmt.Sprintf(cardTemplate, url.ShortUrl, webtitle, url.Url, createdAt, url.ClickCount)
 		}
+		res.Write([]byte(userId))
 	}
 
 	data := map[string]interface{}{
@@ -91,6 +92,7 @@ func (h *UrlHandler) HomeHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	err = tmpl.Execute(res, data)
+	res.Write([]byte(cards))
 	if err != nil {
 		errs += err.Error() + "|"
 		res.Write([]byte(errs))
