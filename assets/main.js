@@ -3,7 +3,7 @@ var urlTextfield = document.getElementById("url-textfield")
 var shortenButton = document.getElementById("submit-button")
 shortenButton.addEventListener("click", onSubmitBtnClicked)
 
-function onSubmitBtnClicked(){
+function onSubmitBtnClicked() {
     urlValue = urlTextfield.value
     reqBody = { url: urlValue }
 
@@ -15,12 +15,14 @@ function onSubmitBtnClicked(){
         },
         body: JSON.stringify(reqBody)
     }).
-    then(res => res.json()).
-    then(json => {      
-        if(json.status_code != 201){
-            urlTextfield.value = "URL isn't valid"
-        } else {
-            urlTextfield.value = "https://shrt.go/"+json.data.short_url
-        }
-    })
+        then(res => res.json()).
+        then(json => {
+            if (json.status_code != 201) {
+                urlTextfield.value = "URL isn't valid"
+            } else {
+                urlTextfield.value = "https://shrt.go/" + json.data.short_url
+            }
+        })
 }
+
+console.log(document.cookie)
